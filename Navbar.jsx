@@ -14,7 +14,7 @@ export default function Navbar() {
                 <Link to="/" className="font-bold text-2xl hover:underline">Next Todo App</Link>
 
                 <div className="px-4 cursor-pointer" id="burger" onClick={toggleMenu}>
-                    <svg className="w-6 h-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    <svg className="w-6 h-6" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </div>
             </div>
 
