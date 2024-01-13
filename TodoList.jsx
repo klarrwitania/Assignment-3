@@ -1,29 +1,35 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
-export default function TodoList({ todos }) {
-    const [completedTodos, setCompletedTodos] = useState(() => {
-        // Initialize completedTodos with stored data from localStorage
-        const storedData = localStorage.getItem('completedTodos');
-        return storedData ? JSON.parse(storedData) : [];
-      });
+export default function TodoList({todos}) {
+    const history = useHistory();
+    const handleChange = (todoId) => {
+      const todo = todos.find((todo) => todo.id === todoId);
+      const status = todo.status;
+      if (status === 'completed') {
+        todo.status = 'pending';
+      } else {
+        todo.status = 'completed';
+      }
 
-      useEffect(() => {
-        // Update localStorage whenever completedTodos changes
-        localStorage.setItem('completedTodos', JSON.stringify(completedTodos));
-      }, [completedTodos]);
-
-    const handleChecked = (todoId) => {
-        setCompletedTodos((prevCompletedTodos) => {
-            if (prevCompletedTodos.includes(todoId)) {
-              return prevCompletedTodos.filter((id) => id !== todoId);
-            } else {
-              return [...prevCompletedTodos, todoId];
-            }
-        })
+      fetch(`http://localhost:7000/todos/${todo.id}`, {
+      method: 'PUT', //use PUT to update or create a resource on the server
+      headers: {
+          'Content-Type': 'application/json', //The request includes a header specifying that the content type of the request body is JSON.
+      },
+      body: JSON.stringify(todo),
+      }).then((response) => {
+          if (!response.ok) {
+          throw new Error('Failed to update todo');
+          }
+          return response.json(); //checks if the response status is okay (status code 200-299). If not, it throws an error. If the response is okay, it proceeds to parse the JSON response using response.json().
+      }).then((updatedTodo) => {
+          history.push('/completed') ;
+      }).catch((error) => {
+          console.error(error.message);
+      })
     }
-
-    const isCompleted = (todoId) => completedTodos.includes(todoId);
 
     return (
         <div>
@@ -40,8 +46,9 @@ export default function TodoList({ todos }) {
                         <div className='flex flex-row space-x-2'>
                             <input 
                                 type="checkbox"
-                                checked={isCompleted(todo.id)}
-                                onChange={() => handleChecked(todo.id)}/>
+                                checked={todo.status === 'completed'}
+                                onChange={() => handleChange(todo.id)}
+                                />
                             <Link to={`/todos/${todo.id}`} className="flex flex-row">
                                 <h2>{ todo.title }</h2>
                             </Link>

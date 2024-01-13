@@ -1,7 +1,14 @@
 import { Link } from "react-router-dom";
+import useFetch from "../components/useFetch";
 
-export default function Completed({ todos }) {
-    const completedTodos = JSON.parse(localStorage.getItem('completedTodos')) || [];
+export default function Completed() {
+    const {
+        data: todos = [], isLoading, error,
+    } = useFetch("http://localhost:7000/todos");
+    let completedTodos = [];
+    if (todos) {
+        completedTodos = todos.filter((todo) => todo.status === 'completed')
+    }
         
     return (
         <div className="m-4">
@@ -37,8 +44,9 @@ export default function Completed({ todos }) {
                 ))
             )}
 
-            <Link to="/" className="px-4 justify-end border border-gray-300 rounded-md py-2 px-3 mt-4 hover:bg-gray-100">Back to Todo List</Link>
-            {/* <TodoList todos={completedTodos} /> */}
+            <Link to="/" className="px-4 justify-end border border-gray-300 rounded-md py-2 px-3 inline-block mt-4 hover:bg-gray-100">Back to Todo List</Link> 
+            {/* from display, while using the property display: inline-block will wrap the element to prevent the text inside from extending beyond its parent. */}
+
         </div>
         
     );
